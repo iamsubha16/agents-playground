@@ -319,7 +319,7 @@ export default function Playground({
         </ConfigurationPanelItem>
 
 
-        {connectionState === ConnectionState.Connected && agent.isConnected && (
+        {/* {connectionState === ConnectionState.Connected && agent.isConnected && (
           <RpcPanel
             config={config}
             rpcMethod={rpcMethod}
@@ -328,7 +328,7 @@ export default function Playground({
             setRpcPayload={setRpcPayload}
             handleRpcCall={handleRpcCall}
           />
-        )}
+        )} */}
         {config.settings.inputs.mic && (
           <ConfigurationPanelItem
             title="Microphone"
