@@ -12,13 +12,13 @@ import { TokenSourceConfigurable, TokenSource } from "livekit-client";
 
 const themeColors = [
   "cyan",
-  "green",
+  // "green",
   "amber",
-  "blue",
-  "violet",
-  "rose",
-  "pink",
-  "teal",
+  // "blue",
+  // "violet",
+  // "rose",
+  // "pink",
+  // "teal",
 ];
 
 const inter = Inter({ subsets: ["latin"] });

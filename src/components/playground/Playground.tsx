@@ -5,7 +5,7 @@ import { ChatTile } from "@/components/chat/ChatTile";
 import { ColorPicker } from "@/components/colorPicker/ColorPicker";
 import { AudioInputTile } from "@/components/config/AudioInputTile";
 import { ConfigurationPanelItem } from "@/components/config/ConfigurationPanelItem";
-import { NameValueRow } from "@/components/config/NameValueRow";
+import { NameValueRow, EditableNameValueRow } from "@/components/config/NameValueRow";
 import { PlaygroundHeader } from "@/components/playground/PlaygroundHeader";
 import {
   PlaygroundTab,
@@ -15,7 +15,6 @@ import {
 import { useConfig } from "@/hooks/useConfig";
 import {
   BarVisualizer,
-  VideoTrack,
   useParticipantAttributes,
   SessionProvider,
   StartAudio,
@@ -34,7 +33,6 @@ import { PartialMessage } from "@bufbuild/protobuf";
 import { QRCodeSVG } from "qrcode.react";
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import tailwindTheme from "../../lib/tailwindTheme.preval";
-import { EditableNameValueRow } from "@/components/config/NameValueRow";
 import { AttributesInspector } from "@/components/config/AttributesInspector";
 import { RpcPanel } from "./RpcPanel";
 import { RoomAgentDispatch } from "livekit-server-sdk";
@@ -86,9 +84,6 @@ export default function Playground({
   const agent = useAgent(session);
   const messages = useSessionMessages(session);
 
-  const localScreenTrack = session.room.localParticipant.getTrackPublication(
-    Track.Source.ScreenShare,
-  );
 
   const startSession = useCallback(() => {
     if (session.isConnected) {
@@ -115,50 +110,24 @@ export default function Playground({
     }
   }, [config, session.room.localParticipant, connectionState]);
 
-  const videoTileContent = useMemo(() => {
-    const videoFitClassName = `object-${config.video_fit || "contain"}`;
-
-    const disconnectedContent = (
-      <div className="flex items-center justify-center text-gray-700 text-center w-full h-full">
-        No agent video track. Connect to get started.
-      </div>
-    );
-
-    const loadingContent = (
-      <div className="flex flex-col items-center justify-center gap-2 text-gray-700 text-center h-full w-full">
-        <LoadingSVG />
-        Waiting for agent video track…
-      </div>
-    );
-
-    const videoContent = agent.cameraTrack ? (
-      <VideoTrack
-        trackRef={agent.cameraTrack}
-        className={`absolute top-1/2 -translate-y-1/2 ${videoFitClassName} object-position-center w-full h-full`}
-      />
-    ) : null;
-
-    let content = null;
-    if (connectionState === ConnectionState.Disconnected) {
-      content = disconnectedContent;
-    } else if (agent.cameraTrack) {
-      content = videoContent;
-    } else {
-      content = loadingContent;
-    }
-
-    return (
-      <div className="flex flex-col w-full grow text-gray-950 bg-black rounded-sm border border-gray-800 relative">
-        {content}
-      </div>
-    );
-  }, [agent.cameraTrack, config, connectionState]);
 
   useEffect(() => {
+    // Fallback to ammber if theme_color is invalid or not found
+    const themeColor = config.settings.theme_color || "amber";
+    
+    // Default amber color as fallback if tailwindTheme is not loaded
+    const defaultAmberColor = "#f59e0b";
+    
+    let colorValue = defaultAmberColor;
+    if (tailwindTheme?.colors) {
+      colorValue = (tailwindTheme.colors as any)[themeColor]?.["500"] || 
+                   (tailwindTheme.colors as any).amber?.["500"] || 
+                   defaultAmberColor;
+    }
+    
     document.body.style.setProperty(
       "--lk-theme-color",
-      // @ts-ignore
-      tailwindTheme.colors[config.settings.theme_color]["500"],
+      colorValue,
     );
     document.body.style.setProperty(
       "--lk-drop-shadow",
@@ -334,7 +303,7 @@ export default function Playground({
                   disabled={true}
                 />
               )}
-            <p className="text-xs text-gray-500 text-right">
+            {/* <p className="text-xs text-gray-500 text-right">
               Set an agent name to use{" "}
               <a
                 href="https://docs.livekit.io/agents/server/agent-dispatch/#explicit"
@@ -345,110 +314,12 @@ export default function Playground({
                 explicit dispatch
               </a>
               .
-            </p>
+            </p> */}
           </div>
         </ConfigurationPanelItem>
 
-        <ConfigurationPanelItem title="User">
-          <div className="flex flex-col gap-2">
-            <EditableNameValueRow
-              name="Name"
-              value={
-                connectionState === ConnectionState.Connected
-                  ? session.room.localParticipant.name || ""
-                  : (tokenFetchOptions?.participantName ?? "")
-              }
-              valueColor={`${config.settings.theme_color}-500`}
-              onValueChange={(value) => {
-                setTokenFetchOptions({
-                  ...tokenFetchOptions,
-                  participantName: value,
-                });
-              }}
-              placeholder="Auto"
-              editable={connectionState !== ConnectionState.Connected}
-            />
-            <EditableNameValueRow
-              name="Identity"
-              value={
-                connectionState === ConnectionState.Connected
-                  ? session.room.localParticipant.identity
-                  : (tokenFetchOptions?.participantIdentity ?? "")
-              }
-              valueColor={`${config.settings.theme_color}-500`}
-              onValueChange={(value) => {
-                setTokenFetchOptions({
-                  ...tokenFetchOptions,
-                  participantIdentity: value,
-                });
-              }}
-              placeholder="Auto"
-              editable={connectionState !== ConnectionState.Connected}
-            />
-            <AttributesInspector
-              attributes={Object.entries(
-                tokenFetchOptions?.participantAttributes || {},
-              ).map(([key, value]) => ({
-                id: key,
-                key,
-                value: value,
-              }))}
-              onAttributesChange={(newAttributes) => {
-                const newAttributesMap = newAttributes.reduce(
-                  (acc, attr) => {
-                    acc[attr.key] = attr.value;
-                    return acc;
-                  },
-                  {} as Record<string, string>,
-                );
-                setTokenFetchOptions({
-                  ...tokenFetchOptions,
-                  participantAttributes: newAttributesMap,
-                });
-              }}
-              metadata={tokenFetchOptions?.participantMetadata}
-              onMetadataChange={(metadata) => {
-                setTokenFetchOptions({
-                  ...tokenFetchOptions,
-                  participantMetadata: metadata,
-                });
-              }}
-              themeColor={config.settings.theme_color}
-              disabled={false}
-              connectionState={connectionState}
-            />
-          </div>
-        </ConfigurationPanelItem>
 
-        {connectionState === ConnectionState.Connected &&
-          config.settings.inputs.screen && (
-            <ConfigurationPanelItem
-              title="Screen"
-              source={Track.Source.ScreenShare}
-            >
-              {localScreenTrack ? (
-                <div className="relative">
-                  <VideoTrack
-                    className="rounded-sm border border-gray-800 opacity-70 w-full"
-                    trackRef={
-                      localScreenTrack
-                        ? {
-                            participant: session.room.localParticipant,
-                            publication: localScreenTrack,
-                            source: Track.Source.ScreenShare,
-                          }
-                        : undefined
-                    }
-                  />
-                </div>
-              ) : (
-                <div className="flex items-center justify-center text-gray-700 text-center w-full h-full">
-                  Press the button above to share your screen.
-                </div>
-              )}
-            </ConfigurationPanelItem>
-          )}
-        {connectionState === ConnectionState.Connected && agent.isConnected && (
+        {/* {connectionState === ConnectionState.Connected && agent.isConnected && (
           <RpcPanel
             config={config}
             rpcMethod={rpcMethod}
@@ -457,19 +328,7 @@ export default function Playground({
             setRpcPayload={setRpcPayload}
             handleRpcCall={handleRpcCall}
           />
-        )}
-        {config.settings.inputs.camera && (
-          <ConfigurationPanelItem title="Camera" source={Track.Source.Camera}>
-            {session.local.cameraTrack ? (
-              <div className="relative">
-                <VideoTrack
-                  className="rounded-sm border border-gray-800 opacity-70 w-full"
-                  trackRef={session.local.cameraTrack}
-                />
-              </div>
-            ) : null}
-          </ConfigurationPanelItem>
-        )}
+        )} */}
         {config.settings.inputs.mic && (
           <ConfigurationPanelItem
             title="Microphone"
@@ -480,7 +339,7 @@ export default function Playground({
             ) : null}
           </ConfigurationPanelItem>
         )}
-        <div className="w-full">
+        {/* <div className="w-full">
           <ConfigurationPanelItem title="Color">
             <ColorPicker
               colors={themeColors}
@@ -492,7 +351,7 @@ export default function Playground({
               }}
             />
           </ConfigurationPanelItem>
-        </div>
+        </div> */}
         {config.show_qr && (
           <div className="w-full">
             <ConfigurationPanelItem title="QR Code">
@@ -509,8 +368,6 @@ export default function Playground({
     session.room.localParticipant,
     session.room.name,
     connectionState,
-    session.local.cameraTrack,
-    localScreenTrack,
     session.local.microphoneTrack,
     themeColors,
     setUserSettings,
@@ -523,19 +380,6 @@ export default function Playground({
   ]);
 
   let mobileTabs: PlaygroundTab[] = [];
-  if (config.settings.outputs.video) {
-    mobileTabs.push({
-      title: "Video",
-      content: (
-        <PlaygroundTile
-          className="w-full h-full grow"
-          childrenClassName="justify-center"
-        >
-          {videoTileContent}
-        </PlaygroundTile>
-      ),
-    });
-  }
 
   if (config.settings.outputs.audio) {
     mobileTabs.push({
@@ -603,20 +447,11 @@ export default function Playground({
           </div>
           <div
             className={`flex-col grow basis-1/2 gap-4 h-full hidden lg:${
-              !config.settings.outputs.audio && !config.settings.outputs.video
+              !config.settings.outputs.audio
                 ? "hidden"
                 : "flex"
             }`}
           >
-            {config.settings.outputs.video && (
-              <PlaygroundTile
-                title="Agent Video"
-                className="w-full h-full grow"
-                childrenClassName="justify-center"
-              >
-                {videoTileContent}
-              </PlaygroundTile>
-            )}
             {config.settings.outputs.audio && (
               <PlaygroundTile
                 title="Agent Audio"
