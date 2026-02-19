@@ -18,10 +18,10 @@ export const PlaygroundToast = () => {
 
   return (
     <div
-      className={`absolute text-sm break-words px-4 pr-12 py-2 bg-${color}-950 rounded-sm border border-${color}-800 text-${color}-400 top-4 left-4 right-4`}
+      className={`absolute text-sm break-words px-4 pr-12 py-3 bg-${color}-950/95 backdrop-blur-sm rounded-xl border border-${color}-800/80 text-${color}-400 top-4 left-4 right-4 shadow-lg shadow-black/20`}
     >
       <button
-        className={`absolute right-2 border border-transparent rounded-md px-2 hover:bg-${color}-900 hover:text-${color}-300`}
+        className={`absolute right-2 border border-transparent rounded-lg px-2 py-0.5 hover:bg-${color}-900/50 transition-all duration-200 hover:text-${color}-300`}
         onClick={() => {
           setToastMessage(null);
         }}

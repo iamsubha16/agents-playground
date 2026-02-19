@@ -34,7 +34,7 @@ export const PlaygroundHeader = ({
     >
       <div className="flex items-center gap-4 basis-2/3">
         <div className="flex lg:basis-1/2">
-          <a href="https://livekit.io" className="transition-opacity hover:opacity-80">{logo ?? <LKLogo />}</a>
+          <a href="https://auflo.in" className="inline-flex transition-all duration-200 hover:opacity-90 hover:scale-105 active:scale-95">{logo ?? <LKLogo />}</a>
         </div>
         <div className="lg:basis-1/2 lg:text-center text-sm lg:text-base font-semibold text-gray-100 tracking-tight">
           {title}
@@ -45,7 +45,7 @@ export const PlaygroundHeader = ({
           <a
             href={githubLink}
             target="_blank"
-            className="text-gray-400 hover:text-white transition-colors duration-200"
+            className="text-gray-400 hover:text-amber-400 transition-all duration-200 hover:scale-110"
           >
             <GithubSVG />
           </a>

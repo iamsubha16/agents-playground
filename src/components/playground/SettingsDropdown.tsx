@@ -92,13 +92,13 @@ export const SettingsDropdown = () => {
 
   return (
     <DropdownMenu.Root modal={false}>
-      <DropdownMenu.Trigger className="group inline-flex max-h-12 items-center gap-1 rounded-md hover:bg-gray-800 bg-gray-900 border-gray-800 p-1 pr-2 text-gray-100 my-auto text-sm flex gap-1 pl-2 py-1 h-full items-center">
+      <DropdownMenu.Trigger className="group inline-flex max-h-12 items-center gap-1 rounded-lg hover:bg-gray-800/80 bg-gray-900/80 border border-gray-800/80 p-1 pr-2 text-gray-100 my-auto text-sm flex gap-1 pl-2 py-1 h-full items-center transition-all duration-200 hover:border-gray-700">
         Settings
         <ChevronIcon />
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="z-50 flex w-60 flex-col gap-0 overflow-hidden rounded text-gray-100 border border-gray-800 bg-gray-900 py-2 text-sm"
+          className="z-50 flex w-60 flex-col gap-0 overflow-hidden rounded-xl text-gray-100 border border-gray-800/80 bg-gray-900/95 backdrop-blur-sm py-2 text-sm shadow-xl shadow-black/30"
           sideOffset={5}
           collisionPadding={16}
         >
@@ -116,7 +116,7 @@ export const SettingsDropdown = () => {
               <DropdownMenu.Label
                 key={setting.key}
                 onClick={() => toggleSetting(setting)}
-                className="flex max-w-full flex-row items-end gap-2 px-3 py-2 text-xs hover:bg-gray-800 cursor-pointer"
+                className="flex max-w-full flex-row items-end gap-2 px-3 py-2.5 text-xs hover:bg-gray-800/80 cursor-pointer transition-colors duration-200 rounded mx-1"
               >
                 <div className="w-4 h-4 flex items-center">
                   {isEnabled(setting) && <CheckIcon />}

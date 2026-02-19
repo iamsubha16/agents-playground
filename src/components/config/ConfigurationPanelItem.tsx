@@ -29,7 +29,7 @@ export const ConfigurationPanelItem: React.FC<ConfigurationPanelItemProps> = ({
           {source && (
             <span className="flex flex-row gap-2">
               <TrackToggle
-                className="px-2 py-1 bg-gray-900 text-gray-300 border border-gray-800 rounded-sm hover:bg-gray-800"
+                className="px-2 py-1 bg-gray-900/80 text-gray-300 border border-gray-800/80 rounded-lg hover:bg-gray-800/80 transition-all duration-200"
                 source={source}
               />
               {source === Track.Source.Camera && (
@@ -43,7 +43,7 @@ export const ConfigurationPanelItem: React.FC<ConfigurationPanelItemProps> = ({
           {collapsible && (
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="text-gray-400 hover:text-gray-300 transition-colors"
+              className="text-gray-400 hover:text-amber-400 transition-all duration-200 p-0.5 rounded"
             >
               <svg
                 className={`w-4 h-4 transform transition-transform ${!isCollapsed ? "rotate-180" : ""}`}

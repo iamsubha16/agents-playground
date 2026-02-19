@@ -46,7 +46,7 @@ export const EditableNameValueRow: React.FC<EditableNameValueRowProps> = ({
           type="text"
           value={value}
           onChange={(e) => onValueChange(e.target.value)}
-          className={`text-xs shrink text-${valueColor} text-right bg-transparent border-b border-gray-800 focus:outline-none focus:border-gray-600 px-2 py-0`}
+          className={`text-xs shrink text-${valueColor} text-right bg-transparent border-b border-gray-800 focus:outline-none focus:border-amber-500/50 px-2 py-0 transition-colors duration-200`}
           placeholder={placeholder}
         />
       </div>

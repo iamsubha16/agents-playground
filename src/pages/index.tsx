@@ -11,9 +11,9 @@ import { ToastProvider, useToast } from "@/components/toast/ToasterProvider";
 import { TokenSourceConfigurable, TokenSource } from "livekit-client";
 
 const themeColors = [
-  "cyan",
-  // "green",
   "amber",
+  // "green",
+  // "cyan",
   // "blue",
   // "violet",
   // "rose",

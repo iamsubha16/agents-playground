@@ -53,7 +53,7 @@ const defaultConfig: AppConfig = {
   video_fit: "contain",
   settings: {
     editable: true,
-    theme_color: "cyan",
+    theme_color: "amber",
     chat: true,
     inputs: {
       camera: false,
@@ -154,7 +154,7 @@ export const ConfigProvider = ({ children }: { children: React.ReactNode }) => {
         video: boolToString(us.outputs.video),
         audio: boolToString(us.outputs.audio),
         chat: boolToString(us.chat),
-        theme_color: us.theme_color || "cyan",
+        theme_color: us.theme_color || "amber",
       });
       router.replace("/#" + obj.toString());
     },
